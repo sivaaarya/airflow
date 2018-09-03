@@ -1,0 +1,13 @@
+---
+
+- name: restart airflow-webserver
+  service:
+    name: airflow-webserver
+    state: restarted
+  when: airflow_services['airflow-webserver'] and airflow_services['airflow-webserver']['enabled']
+
+- name: restart airflow-worker
+  service:
+    name: airflow-worker
+    state: restarted
+  when: airflow_services['airflow-worker'] and airflow_services['airflow-worker']['enabled']

@@ -1,0 +1,16 @@
+---
+# roles/deploy/tasks/main.yml
+- name: Install Airflow
+  import_tasks: install.yml
+  tags:
+    - install
+
+- name: Config Airflow
+  import_tasks: config.yml
+  tags:
+    - config
+
+# - name: Airflow Service
+#   import_tasks: service.yml
+#   tags:
+#     - service

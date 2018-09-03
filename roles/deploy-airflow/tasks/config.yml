@@ -1,0 +1,29 @@
+---
+
+- name: Ensure airflow directories structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+  with_items:
+    - "{{ airflow_logs_folder }}"
+    - "{{ airflow_plugins_folder }}"
+
+- name: Copy basic airflow config file
+  template:
+    src: "airflow.cfg.j2"
+    dest: "{{ airflow_home }}/airflow.cfg"
+    owner: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+    mode: 0640
+  register: airflow_config
+
+# - name: Initializing DB
+#   command: "{{ airflow_executable }} initdb"
+#   environment:
+#     AIRFLOW_HOME: "{{ airflow_home }}"
+#   become: true
+#   become_user: "{{ airflow_user }}"
+
+

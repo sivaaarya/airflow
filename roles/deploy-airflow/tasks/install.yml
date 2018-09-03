@@ -1,0 +1,83 @@
+---
+
+- name: Ensure Airflow group
+  group:
+    name: "{{ airflow_group }}"
+
+- name: Ensure Airflow user
+  user:
+    name: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+    shell: /bin/bash
+
+- name: Create path for Airflow home
+  file:
+    path: "{{ airflow_home }}"
+    state: directory
+    owner: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+
+- name: Create path for configuration files
+  file:
+    path: "{{ airflow_environment_file_folder }}"
+    state: directory
+    owner: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+
+- name: Create path for PID files
+  file:
+    path: "{{ airflow_pidfile_folder }}"
+    state: directory
+    owner: "{{ airflow_user }}"
+    group: "{{ airflow_group }}"
+
+- name: Installing dependencies
+  yum:
+    pkg: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - python-pip
+    - acl
+    - gcc
+
+- name: Set AIRFLOW_HOME environment variable in /etc/environment
+  lineinfile:
+    path: /etc/environment
+    line: 'AIRFLOW_HOME={{ airflow_home }}'
+
+- name: Installing Airflow
+  pip:
+    name: apache-airflow
+    # version: "{{ airflow_version }}"
+  environment:
+    SLUGIFY_USES_TEXT_UNIDECODE: "yes"
+  register: airflow_install
+
+- name: Installing Airflow Extra Packages
+  pip:
+    name: apache-airflow[{{ item }}]
+  with_items:
+    - postgres
+    - redis
+
+- name: Installing psycopg2 Package
+  pip:
+    name: psycopg2
+
+# - name: Airflow | Copy Environment File
+#   template:
+#     src: airflow-environment-file.j2
+#     dest: "{{ airflow_environment_file_folder }}/airflow"
+#     mode: 0644
+#     owner: "{{ airflow_user }}"
+#     group: "{{ airflow_group }}"
+
+# - name: Airflow | Copy Daemon scripts
+#   template:
+#     src: "{{ item.key }}.service.j2"
+#     dest: /lib/systemd/system/{{ item.key }}.service
+#     mode: 0644
+#   notify: restart {{ item.key }}
+#   with_dict: "{{ airflow_services }}"
+#   when: "{{ item.value.enabled }}"

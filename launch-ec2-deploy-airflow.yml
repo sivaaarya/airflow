@@ -1,0 +1,26 @@
+---
+- name: Provision instance for Airflow webapp
+  hosts: localhost
+  connection: local
+  # gather_facts: no
+  roles:
+    - role: launch
+      name: airflow-host
+
+- name: Install Airflow webapp and it's components
+  hosts: airflow-group
+  remote_user: ec2-user
+  become: yes
+  roles:
+    - deploy-airflow
+  environment:
+    SLUGIFY_USES_TEXT_UNIDECODE: yes
+
+- name: Provision load balancer and auto scaling group for webapp
+  hosts: airflow-group
+  connection: local
+  gather_facts: no
+  roles:
+    - create-launch-configuration
+    - load-balancer
+    - auto-scaling
