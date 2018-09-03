@@ -1,0 +1,26 @@
+---
+# group_vars/all.yml
+
+# AWS EC2
+aws_access_key:
+aws_secret_key:
+region: us-east-1
+zone: us-east-1a
+keypair: deploy-airflow
+security_groups: default
+instance_type: t2.small
+image: ami-04681a1dbd79675a5
+subnet: subnet-32c89c78
+
+# Airflow
+airflow_executable: "/bin/airflow"
+
+airflow_home: /etc/airflow
+airflow_logs_folder: /var/log/airflow
+airflow_plugins_folder: "{{ airflow_home }}/plugins"
+airflow_pidfile_folder: "/run/airflow"
+airflow_environment_file_folder: /etc/sysconfig
+
+airflow_user: airflow
+airflow_group: airflow
+
